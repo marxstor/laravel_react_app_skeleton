@@ -33,7 +33,8 @@ api.interceptors.response.use(
         switch(status) {
             case 401: 
                 localStorage.removeItem('token');
-                window.location.href = '/login';
+                console.error('Invalid email or password.');
+                // window.location.href = '/';
                 break;
             
             case 403: 

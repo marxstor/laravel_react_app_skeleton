@@ -1,27 +1,13 @@
-import React, { useEffect } from 'react'
-import { getTest } from '../api/v1/test'
+import React from 'react'
+import LoginForm from '@/components/pages/Login/LoginForm'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const Login = () => {
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const data = await getTest();
-    //         console.log(data.message);
-    //     };
-
-    //     fetchData();
-    // }, []);
-
-    const handleCallTestApi = async () => {
-        const data = await getTest();
-        console.log(data);
-    }
-
+    useDocumentTitle('Login')
     return (
-        <>
-            <div>Login</div>
-            <button className='bg-blue-600 text-white px-4 py-2 rounded cursor-pointer' onClick={handleCallTestApi}>Call laravel /test api</button>
-        </>
+        <div className="min-h-screen flex items-center justify-center">
+            <LoginForm />
+        </div>
     )
 }
 
