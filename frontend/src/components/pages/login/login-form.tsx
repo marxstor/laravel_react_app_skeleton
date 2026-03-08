@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Text from '@/components/ui/text'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from '@/api/v1/auth-api'
+import { useAuth } from '@/context/auth-context'
 
 interface UserCredentials {
 	email: string;
@@ -13,6 +14,9 @@ interface UserCredentials {
 }
 
 const LoginForm = () => {
+	const { login } = useAuth();
+	const [isLoading, setIsLoading] = useState(false);
+	const navigate = useNavigate()
 
 	const [userCredentials, setUserCredentials ] = useState<UserCredentials>({
 		email: '',
@@ -32,9 +36,16 @@ const LoginForm = () => {
 	const handleSubmit = async () => {
 		console.log(userCredentials);
 		try {
+			// const { data } = await authApi.login(userCredentials);
 			const { data } = await authApi.login(userCredentials);
 
 			console.log(data);
+			if(data.success) {
+				localStorage.setItem('token', data.token);
+				login(data.user);
+				navigate('/dashboard');
+			}
+
 		} catch (err) {
 			console.log('Something went wrong');
 		}
@@ -70,7 +81,9 @@ const LoginForm = () => {
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
-							<Button className='w-full' onClick={handleSubmit}>Sign in</Button>
+							<Button className='w-full' onClick={handleSubmit}>
+								{isLoading ? 'Signing in...' : 'Sign in'}
+							</Button>
 							<Text variant='muted'>Don't have an account? <Link to = "/register" className='text-blue-600 font-medium hover:underline'>Sign up</Link></Text>
 						</div>
         </CardFooter>
