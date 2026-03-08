@@ -1,11 +1,12 @@
+import { SidebarProvider } from './components/ui/sidebar';
 import AppRouter from './routes/AppRouter';
 
 
 function App() {
   return (
-    <>
-		<AppRouter />
-    </>
+    <SidebarProvider>
+      <AppRouter />
+    </SidebarProvider>
   )
 }
 
