@@ -1,5 +1,5 @@
 import React from 'react'
-import LoginForm from '@/components/pages/Login/LoginForm'
+import LoginForm from '@/components/pages/login/login-form'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const Login = () => {

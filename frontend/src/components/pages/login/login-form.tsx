@@ -71,7 +71,7 @@ const LoginForm = () => {
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
 							<Button className='w-full' onClick={handleSubmit}>Sign in</Button>
-							<Text variant='muted'>Don't have an account? <Link to = "/signup" className='text-blue-600 font-medium hover:underline'>Sign up</Link></Text>
+							<Text variant='muted'>Don't have an account? <Link to = "/register" className='text-blue-600 font-medium hover:underline'>Sign up</Link></Text>
 						</div>
         </CardFooter>
     </Card>
