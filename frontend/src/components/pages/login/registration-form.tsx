@@ -82,7 +82,7 @@ const RegistrationForm = () => {
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
 							<Button className='w-full' onClick={handleSubmit}>Sign up</Button>
-							<Text variant='muted'>Already have an account? <Link to = "/" className='text-blue-600 font-medium hover:underline'>Login</Link></Text>
+							<Text variant='muted'>Already have an account? <Link to = "/login" className='text-blue-600 font-medium hover:underline'>Login</Link></Text>
 						</div>
         </CardFooter>
     </Card>

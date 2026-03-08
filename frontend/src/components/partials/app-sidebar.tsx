@@ -9,9 +9,11 @@ import {
   SidebarHeader, 
   SidebarMenu, 
   SidebarMenuButton, 
-  SidebarMenuItem 
+  SidebarMenuItem, 
 } from '@/components/ui/sidebar'
 import { Folder, LayoutDashboard, LogOut, User, type LucideIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import logo from '@/assets/images/logo.png';
 
 
 const AppSidebar = () => {
@@ -48,9 +50,10 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton>
-              <a href='#'>
+              <img src = {logo} alt='Logo' className='h-8 w-8'/>
+              <Link to='/dashboard' className = "font-medium">
                 Laravel + React
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -63,10 +66,10 @@ const AppSidebar = () => {
               {data.links.map((link) => (
                 <SidebarMenuItem key={link.title}>
                   <SidebarMenuButton className='cursor-pointer'>
-                    <a href={link.url} className='flex items-center gap-2 cursor-pointer'>
+                    <Link to={link.url} className='flex items-center gap-2 cursor-pointer'>
                       {link.icon && <link.icon />}
                       <span>{link.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -78,10 +81,10 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className='cursor-pointer'>
-              <a href='#' className='flex items-center gap-2'>
+              <Link to='#' className='flex items-center gap-2'>
                 <LogOut />
                 <span>Logout</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -90,4 +93,4 @@ const AppSidebar = () => {
   )
 }
 
-export default AppSidebar
+export default AppSidebar 

@@ -1,12 +1,9 @@
-import { SidebarProvider } from './components/ui/sidebar';
-import AppRouter from './routes/AppRouter';
+import AppRouter from './routes/app-router';
 
 
 function App() {
   return (
-    <SidebarProvider>
-      <AppRouter />
-    </SidebarProvider>
+    <AppRouter />
   )
 }
 
