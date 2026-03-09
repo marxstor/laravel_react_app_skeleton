@@ -4,8 +4,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Text from '@/components/ui/text'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from '@/api/v1/auth-api'
+import { useAuth } from '@/context/auth-context'
+import axios from 'axios'
+import FieldError from '@/components/ui/field-error'
 
 interface UserCredentials {
 	email: string;
@@ -13,6 +16,11 @@ interface UserCredentials {
 }
 
 const LoginForm = () => {
+	const { login } = useAuth();
+	const navigate = useNavigate()
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [fieldErrors, setFieldErrors] = useState<Partial<UserCredentials>>({});
 
 	const [userCredentials, setUserCredentials ] = useState<UserCredentials>({
 		email: '',
@@ -30,13 +38,49 @@ const LoginForm = () => {
 	}
 
 	const handleSubmit = async () => {
-		console.log(userCredentials);
+		setIsLoading(true);
+		setError(null);
+		setFieldErrors({});
 		try {
 			const { data } = await authApi.login(userCredentials);
 
-			console.log(data);
-		} catch (err) {
-			console.log('Something went wrong');
+			if(data.success) {
+				localStorage.setItem('token', data.token);
+				login(data.user);
+				navigate('/dashboard');
+			}
+
+		} catch (err: unknown) {
+			if(axios.isAxiosError(err)) {
+				const status = err.response?.status;
+				
+				switch(status) {
+					case 422: 
+						const fieldErrors = err.response?.data?.errors;
+						setFieldErrors({
+							email: fieldErrors.email,
+							password: fieldErrors.password
+						});
+						break;
+
+					case 401:
+						const errorMessage = err?.response?.data?.message;
+						setError(errorMessage);
+						setUserCredentials(prev => ({
+							...prev,
+							password: ''
+						}))
+						break;
+
+					default: 
+						console.log('Unknown error status');
+				}
+
+
+			}
+
+		} finally {
+			setIsLoading(false);
 		}
 	}
 
@@ -55,8 +99,11 @@ const LoginForm = () => {
 									type = 'email' 
 									placeholder = 'john@example.com'
 									name = 'email'
+									value = {userCredentials?.email}
 									onChange={handleUserCredentialsChange}
+									disabled={isLoading}
 								/>
+								{fieldErrors?.email && <FieldError message={fieldErrors?.email}/>}
             </div>
             <div className='grid gap-2'>
                 <Label htmlFor = "password">Password</Label>
@@ -64,13 +111,19 @@ const LoginForm = () => {
 									type = 'password' 
 									placeholder='**********'
 									name = "password"
+									value = {userCredentials?.password}
 									onChange={handleUserCredentialsChange}
+									disabled={isLoading}
 								/>
+								{fieldErrors?.password && <FieldError message={fieldErrors?.password}/>}
             </div>
+						{error && <FieldError message={error}/>}
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
-							<Button className='w-full' onClick={handleSubmit}>Sign in</Button>
+							<Button className='w-full' onClick={handleSubmit} disabled={isLoading}>
+								{isLoading ? 'Signing in...' : 'Sign in'}
+							</Button>
 							<Text variant='muted'>Don't have an account? <Link to = "/register" className='text-blue-600 font-medium hover:underline'>Sign up</Link></Text>
 						</div>
         </CardFooter>

@@ -1,7 +1,7 @@
 import api from "./api-service";
 
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
     created_at: string;
@@ -20,6 +20,7 @@ export interface RegisterPayload {
 }
 
 export interface AuthResponse {
+    success: boolean;
     token: string;
     user: User;
 }

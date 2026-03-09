@@ -5,7 +5,8 @@ const api = axios.create({
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
-    }    
+    },
+    withCredentials: true    
 });
 
 // Request interceptor
@@ -33,8 +34,6 @@ api.interceptors.response.use(
         switch(status) {
             case 401: 
                 localStorage.removeItem('token');
-                console.error('Invalid email or password.');
-                // window.location.href = '/';
                 break;
             
             case 403: 

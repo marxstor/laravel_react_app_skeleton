@@ -1,4 +1,4 @@
-import RegistrationForm from '@/components/pages/login/registration-form'
+import RegistrationForm from '@/components/pages/register/registration-form'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import React from 'react'
 
