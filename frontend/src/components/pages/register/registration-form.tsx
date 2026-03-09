@@ -4,8 +4,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import Text from '@/components/ui/text'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import authApi from '@/api/v1/auth-api'
+import { useAuth } from '@/context/auth-context'
 
 interface UserDetails {
 	name: string;
@@ -14,7 +15,9 @@ interface UserDetails {
 }
 
 const RegistrationForm = () => {
-
+    const { login } = useAuth();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [userDetails, setUserDetails ] = useState<UserDetails>({
 		name: '',
 		email: '',
@@ -31,16 +34,23 @@ const RegistrationForm = () => {
 
 	}
 
-	const handleSubmit = async () => {
-		console.log(userDetails);
-		try {
-			const { data } = await authApi.register(userDetails);
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        try {
+            const { data } = await authApi.register(userDetails);
 
-			console.log(data);
-		} catch (err) {
-			console.log('Something went wrong');
-		}
-	} 
+            if(data.success) {
+                localStorage.setItem('token', data.token);
+                login(data.user);
+                navigate('/dashboard');
+            }
+
+        } catch (err) {
+            console.log('Something went wrong');
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
   return (
     <Card className='w-full max-w-sm'>
@@ -58,6 +68,7 @@ const RegistrationForm = () => {
                     placeholder = 'Enter your name'
                     name = 'name'
                     onChange={handleUserDetailsChange}
+                    disabled={isLoading}
                 />
             </div>
             <div className='grid gap-2'>
@@ -67,6 +78,7 @@ const RegistrationForm = () => {
                     placeholder = 'john@example.com'
                     name = 'email'
                     onChange={handleUserDetailsChange}
+                    disabled={isLoading}
                 />
             </div>
             <div className='grid gap-2'>
@@ -76,12 +88,15 @@ const RegistrationForm = () => {
 									placeholder='**********'
 									name = "password"
 									onChange={handleUserDetailsChange}
+                                    disabled={isLoading}
 								/>
             </div>
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
-							<Button className='w-full' onClick={handleSubmit}>Sign up</Button>
+							<Button className='w-full' onClick={handleSubmit} disabled={isLoading}>
+                                {isLoading ? 'Signing up' :'Sign up '}
+                            </Button>
 							<Text variant='muted'>Already have an account? <Link to = "/login" className='text-blue-600 font-medium hover:underline'>Login</Link></Text>
 						</div>
         </CardFooter>

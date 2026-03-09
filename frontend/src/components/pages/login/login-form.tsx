@@ -34,12 +34,10 @@ const LoginForm = () => {
 	}
 
 	const handleSubmit = async () => {
-		console.log(userCredentials);
+		setIsLoading(true);
 		try {
-			// const { data } = await authApi.login(userCredentials);
 			const { data } = await authApi.login(userCredentials);
 
-			console.log(data);
 			if(data.success) {
 				localStorage.setItem('token', data.token);
 				login(data.user);
@@ -48,6 +46,8 @@ const LoginForm = () => {
 
 		} catch (err) {
 			console.log('Something went wrong');
+		} finally {
+			setIsLoading(false);
 		}
 	}
 
@@ -67,6 +67,7 @@ const LoginForm = () => {
 									placeholder = 'john@example.com'
 									name = 'email'
 									onChange={handleUserCredentialsChange}
+									disabled={isLoading}
 								/>
             </div>
             <div className='grid gap-2'>
@@ -76,12 +77,13 @@ const LoginForm = () => {
 									placeholder='**********'
 									name = "password"
 									onChange={handleUserCredentialsChange}
+									disabled={isLoading}
 								/>
             </div>
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
-							<Button className='w-full' onClick={handleSubmit}>
+							<Button className='w-full' onClick={handleSubmit} disabled={isLoading}>
 								{isLoading ? 'Signing in...' : 'Sign in'}
 							</Button>
 							<Text variant='muted'>Don't have an account? <Link to = "/register" className='text-blue-600 font-medium hover:underline'>Sign up</Link></Text>

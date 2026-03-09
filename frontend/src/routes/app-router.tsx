@@ -6,17 +6,13 @@ import AppLayout from '@/layouts/app-layout'
 import { AuthProvider, useAuth } from '@/context/auth-context'
 
 const ProtectedRoute = () => {
-    const { user, loading } = useAuth()
-
-    if (loading) return <div>Loading...</div>
+    const { user } = useAuth()
 
     return user ? <Outlet /> : <Navigate to="/login" replace />
 }
 
 const GuestRoute = () => {
-    const { user, loading } = useAuth()
-
-    if (loading) return <div>Loading...</div>
+    const { user } = useAuth()
 
     return !user ? <Outlet /> : <Navigate to="/dashboard" replace />
 }

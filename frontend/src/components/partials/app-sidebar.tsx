@@ -12,11 +12,15 @@ import {
   SidebarMenuItem, 
 } from '@/components/ui/sidebar'
 import { Folder, LayoutDashboard, LogOut, User, type LucideIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '@/assets/images/logo.png';
+import { useAuth } from '@/context/auth-context';
+import authApi from '@/api/v1/auth-api';
 
 
 const AppSidebar = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const data:{ 
     links: {
       title: string;
@@ -42,6 +46,19 @@ const AppSidebar = () => {
       },
     ]
   };
+
+  const handleLogout = async () => {
+  
+    try {
+      await authApi.logout();
+    } catch (err) {
+      
+    } finally {
+      localStorage.removeItem('token');
+      logout();
+      navigate('/login');
+    }
+  }
 
 
   return (
@@ -80,11 +97,9 @@ const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className='cursor-pointer'>
-              <Link to='#' className='flex items-center gap-2'>
+            <SidebarMenuButton className='cursor-pointer' onClick={handleLogout}>
                 <LogOut />
                 <span>Logout</span>
-              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

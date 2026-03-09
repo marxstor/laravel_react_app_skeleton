@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
@@ -64,5 +65,55 @@ class AuthService
 
         return $response;
 
+    }
+
+    public function logout($user) 
+    {
+
+        try {
+            
+            if(!$user) {
+                return [
+                    "success" => false,
+                    "message" => "User not authenticated"
+                ];
+            }
+
+            $token = $user->currentAccessToken();
+
+            if(!$token) {
+                return [
+                    "success" => false,
+                    "message" => "No active access token found."
+                ];
+            }
+
+            $token->delete();
+
+            return [
+                "success" => true,
+                "message" => "Logout successfull."
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Logout failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $user?->id
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Something went wrong during logout.'
+            ];
+        }
+
+    }
+
+    public function me($user)
+    {
+        return [
+            "success" => true,
+            "user"  => $user
+        ];
     }
 }

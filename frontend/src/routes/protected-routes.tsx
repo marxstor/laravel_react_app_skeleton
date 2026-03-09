@@ -6,17 +6,13 @@ type RouteProps = {
     children: React.ReactNode;
 }
 export const ProtectedRoute = ({ children }: RouteProps) => {
-    const { user, loading } =  useAuth();
-
-    if(loading) return <div>Loading...</div>;
+    const { user } =  useAuth();
 
     return user ? children : <Navigate to='/login'/>
 }
 
 export const GuestRoute = ({ children }: RouteProps) => {
-    const { user, loading } =  useAuth();
-
-    if(loading) return <div>Loading...</div>;
+    const { user } =  useAuth();
 
     return !user ? children : <Navigate to='/dashboard'/>
 };
