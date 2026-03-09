@@ -7,6 +7,8 @@ import Text from '@/components/ui/text'
 import { Link, useNavigate } from 'react-router-dom'
 import authApi from '@/api/v1/auth-api'
 import { useAuth } from '@/context/auth-context'
+import axios from 'axios'
+import FieldError from '@/components/ui/field-error'
 
 interface UserCredentials {
 	email: string;
@@ -15,8 +17,10 @@ interface UserCredentials {
 
 const LoginForm = () => {
 	const { login } = useAuth();
-	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate()
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [fieldErrors, setFieldErrors] = useState<Partial<UserCredentials>>({});
 
 	const [userCredentials, setUserCredentials ] = useState<UserCredentials>({
 		email: '',
@@ -35,6 +39,8 @@ const LoginForm = () => {
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
+		setError(null);
+		setFieldErrors({});
 		try {
 			const { data } = await authApi.login(userCredentials);
 
@@ -44,8 +50,35 @@ const LoginForm = () => {
 				navigate('/dashboard');
 			}
 
-		} catch (err) {
-			console.log('Something went wrong');
+		} catch (err: unknown) {
+			if(axios.isAxiosError(err)) {
+				const status = err.response?.status;
+				
+				switch(status) {
+					case 422: 
+						const fieldErrors = err.response?.data?.errors;
+						setFieldErrors({
+							email: fieldErrors.email,
+							password: fieldErrors.password
+						});
+						break;
+
+					case 401:
+						const errorMessage = err?.response?.data?.message;
+						setError(errorMessage);
+						setUserCredentials(prev => ({
+							...prev,
+							password: ''
+						}))
+						break;
+
+					default: 
+						console.log('Unknown error status');
+				}
+
+
+			}
+
 		} finally {
 			setIsLoading(false);
 		}
@@ -66,9 +99,11 @@ const LoginForm = () => {
 									type = 'email' 
 									placeholder = 'john@example.com'
 									name = 'email'
+									value = {userCredentials?.email}
 									onChange={handleUserCredentialsChange}
 									disabled={isLoading}
 								/>
+								{fieldErrors?.email && <FieldError message={fieldErrors?.email}/>}
             </div>
             <div className='grid gap-2'>
                 <Label htmlFor = "password">Password</Label>
@@ -76,10 +111,13 @@ const LoginForm = () => {
 									type = 'password' 
 									placeholder='**********'
 									name = "password"
+									value = {userCredentials?.password}
 									onChange={handleUserCredentialsChange}
 									disabled={isLoading}
 								/>
+								{fieldErrors?.password && <FieldError message={fieldErrors?.password}/>}
             </div>
+						{error && <FieldError message={error}/>}
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>

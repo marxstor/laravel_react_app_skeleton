@@ -7,6 +7,9 @@ import Text from '@/components/ui/text'
 import { Link, useNavigate } from 'react-router-dom'
 import authApi from '@/api/v1/auth-api'
 import { useAuth } from '@/context/auth-context'
+import axios from 'axios'
+import FieldError from '@/components/ui/field-error'
+
 
 interface UserDetails {
 	name: string;
@@ -18,11 +21,13 @@ const RegistrationForm = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [userDetails, setUserDetails ] = useState<UserDetails>({
-		name: '',
-		email: '',
-		password: ''
-	});
+		const [userDetails, setUserDetails ] = useState<UserDetails>({
+			name: '',
+			email: '',
+			password: ''
+		});
+		const [error, setError] = useState<string | null>(null);
+		const [fieldErrors, setFieldErrors] = useState<Partial<UserDetails>>({});
 
 	const handleUserDetailsChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = ev.target;
@@ -36,6 +41,8 @@ const RegistrationForm = () => {
 
     const handleSubmit = async () => {
         setIsLoading(true);
+				setError(null);
+				setFieldErrors({});
         try {
             const { data } = await authApi.register(userDetails);
 
@@ -46,7 +53,30 @@ const RegistrationForm = () => {
             }
 
         } catch (err) {
-            console.log('Something went wrong');
+            if(axios.isAxiosError(err)) {
+				const status = err.response?.status;
+				
+				switch(status) {
+					case 422: 
+						const fieldErrors = err.response?.data?.errors;
+						setFieldErrors({
+							name: fieldErrors?.name,
+							email: fieldErrors?.email,
+							password: fieldErrors?.password
+						});
+						break;
+
+					case 401:
+						const errorMessage = err?.response?.data?.message;
+						setError(errorMessage);
+						break;
+
+					default: 
+						console.log('Unknown error status');
+				}
+
+
+			}
         } finally {
             setIsLoading(false);
         }
@@ -67,9 +97,11 @@ const RegistrationForm = () => {
                     type = 'text' 
                     placeholder = 'Enter your name'
                     name = 'name'
+										value = {userDetails?.name}
                     onChange={handleUserDetailsChange}
                     disabled={isLoading}
                 />
+								{fieldErrors?.name && <FieldError message={fieldErrors?.name}/>}
             </div>
             <div className='grid gap-2'>
                 <Label htmlFor = "email">Email</Label>
@@ -77,9 +109,11 @@ const RegistrationForm = () => {
                     type = 'email' 
                     placeholder = 'john@example.com'
                     name = 'email'
+										value = {userDetails?.email}
                     onChange={handleUserDetailsChange}
                     disabled={isLoading}
                 />
+								{fieldErrors?.email && <FieldError message={fieldErrors?.email}/>}
             </div>
             <div className='grid gap-2'>
                 <Label htmlFor = "password">Password</Label>
@@ -87,9 +121,11 @@ const RegistrationForm = () => {
 									type = 'password' 
 									placeholder='**********'
 									name = "password"
+									value = {userDetails?.password}
 									onChange={handleUserDetailsChange}
-                                    disabled={isLoading}
+									disabled={isLoading}
 								/>
+								{fieldErrors?.password && <FieldError message={fieldErrors?.password}/>}
             </div>
         </CardContent>
         <CardFooter className='bg-white'>
