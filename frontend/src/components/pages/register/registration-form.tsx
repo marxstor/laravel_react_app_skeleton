@@ -127,12 +127,13 @@ const RegistrationForm = () => {
 								/>
 								{fieldErrors?.password && <FieldError message={fieldErrors?.password}/>}
             </div>
+						{error && <FieldError message={error}/>}
         </CardContent>
         <CardFooter className='bg-white'>
 						<div className='w-full text-center space-y-2'>
 							<Button className='w-full' onClick={handleSubmit} disabled={isLoading}>
-                                {isLoading ? 'Signing up' :'Sign up '}
-                            </Button>
+									{isLoading ? 'Signing up' :'Sign up '}
+							</Button>
 							<Text variant='muted'>Already have an account? <Link to = "/login" className='text-blue-600 font-medium hover:underline'>Login</Link></Text>
 						</div>
         </CardFooter>
