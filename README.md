@@ -57,16 +57,17 @@ The API will be running at `http://localhost:8000`.
 
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
 
 The app will be running at `http://localhost:5173`.
 
-> **Important:** Open `src/api/v1/api-service.ts` and update `baseUrl` to match the port your backend is running on.
+> **Important:** Open `.env` and update `VITE_API_URL` to match the port your backend is running on.
 
 ```ts
-const baseUrl = 'http://localhost:8000/api'; // change port if needed
+VITE_API_URL = 'http://localhost:8000/api'; // change port if needed
 ```
 
 ---
